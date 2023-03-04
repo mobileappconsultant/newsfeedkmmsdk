@@ -1,0 +1,58 @@
+scalar Timestamp
+### User Queries ###
+type User {
+  _id: ID!
+  email: String!
+  picture: String!
+  full_name: String!
+    topics: [Topic]
+  user_id: String!
+  created_at: Timestamp!
+  updated_at: Timestamp!
+}
+
+type Topic {
+    topic: String!
+}
+
+input CreateUser {
+    email: String!
+    picture: String!
+    full_name: String!
+    topics: [String]
+    user_id: String!
+}
+
+type Article {
+    author: String!
+    source: Source!
+    title: String!
+    description: String!
+    url: String!
+    urlToImage: String!
+    publishedAt: String!
+    content: String
+}
+
+type Source {
+    id: String!
+    name: String!
+}
+type Response {
+    status: String!
+    totalResults: Int!
+    articles: [Article!]!
+}
+
+type Mutation {
+    CreateNewUser(input: CreateUser!): User!
+}
+
+type Query {
+    GetUser: User!
+}
+
+extend type Query {
+    GetNews(query: String!):[Article!]!
+    NewsFeed:[Article!]!
+}
