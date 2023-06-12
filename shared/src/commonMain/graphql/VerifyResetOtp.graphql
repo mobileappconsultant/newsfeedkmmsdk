@@ -1,0 +1,5 @@
+mutation VerifyResetOtp($input: VerifyOtp!) {
+    response: VerifyResetOtp(input: $input) {
+        message
+    }
+}

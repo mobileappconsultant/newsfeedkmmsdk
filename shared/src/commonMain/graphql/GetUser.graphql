@@ -1,9 +1,6 @@
-query Query {
-    GetUser {
+query GetUser {
+    response: GetUser {
         full_name
         email
     }
-#    NewsFeed {
-#        title
-#    }
 }

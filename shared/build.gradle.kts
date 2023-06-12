@@ -1,7 +1,15 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("com.apollographql.apollo3").version("3.7.4")
+    `maven-publish`
+}
+
+apply {
+    plugin("maven-publish")
 }
 
 kotlin {
@@ -12,14 +20,16 @@ kotlin {
             }
         }
     }
-    
+
+    val xcFramework = XCFramework()
+
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "shared"
+            xcFramework.add(this)
         }
     }
 
@@ -66,8 +76,65 @@ android {
     }
 }
 
+configure<com.apollographql.apollo3.gradle.api.ApolloExtension> {
+
+    sourceSets {
+        schemaFile.set(file("src/commonMain/graphql/schema.json"))
+    }
+}
+
 apollo {
-    service("service") {
-        packageName.set("com.mobileappconsultant.newsfeedmmsdk.graphql")
+    generateKotlinModels.set(true)
+    packageName.set("com.mobileappconsultant.newsfeedmmsdk.graphql")
+
+    introspection {
+        schemaFile.set(file("src/commonMain/graphql/schema.json"))
+        endpointUrl.set("https://newsfeedapi.frontendlabs.co.uk/query")
+    }
+}
+
+val githubProperties = Properties()
+githubProperties.load(project.rootProject.file("github.properties").inputStream())
+
+publishing {
+    repositories {
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/mobileappconsultant/newsfeedkmmsdk")
+            credentials {
+                username = githubProperties["gpr.user"] as String? ?: System.getenv("GPR_USER")
+                password = githubProperties["gpr.key"] as String? ?: System.getenv("GPR_KEY")
+            }
+        }
+    }
+
+    publications {
+        register<MavenPublication>("gpr") {
+            groupId = "com.mobileappconsultant.newsfeedkmmsdk"
+            artifactId = "sdk"
+            version = file("../VERSION").readText()
+            artifact("$buildDir/outputs/aar/shared-release.aar")
+
+            pom.withXml {
+                // for dependencies and exclusions
+                val dependenciesNode = asNode().appendNode("dependencies")
+                configurations.implementation.allDependencies.withType(ModuleDependency::class.java) {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    dependencyNode.appendNode("groupId", group)
+                    dependencyNode.appendNode("artifactId", name)
+                    dependencyNode.appendNode("version", version)
+
+                    // for exclusions
+                    if (excludeRules.size > 0) {
+                        val exclusions = dependencyNode.appendNode("exclusions")
+                        excludeRules.forEach { ex ->
+                            val exclusion = exclusions.appendNode("exclusion")
+                            exclusion.appendNode("groupId", ex.group)
+                            exclusion.appendNode("artifactId", ex.module)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

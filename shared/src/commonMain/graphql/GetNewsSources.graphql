@@ -1,0 +1,9 @@
+query GetNewsSources {
+    response: GetNewsSources {
+        id
+        name
+        url
+        category
+        icon
+    }
+}

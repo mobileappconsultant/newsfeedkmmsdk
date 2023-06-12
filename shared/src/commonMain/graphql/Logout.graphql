@@ -1,0 +1,5 @@
+mutation Logout($input: Logout!) {
+    response: Logout(input: $input) {
+        message
+    }
+}

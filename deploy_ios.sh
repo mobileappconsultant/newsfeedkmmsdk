@@ -24,19 +24,19 @@ git checkout --orphan "$version" || exit
 git rm --cached -r . || exit
 
 # Build the project
-./gradlew assembleMagicsdkReleaseXCFramework || exit
+./gradlew assembleSharedReleaseXCFramework || exit
 
 # Copy the XCFramework to the root folder
 # shellcheck disable=SC2039
 pushd "magicsdk/build/XCFrameworks/release" || exit
-zip -r magicsdk.xcframework.zip magicsdk.xcframework
+zip -r newsfeed.xcframework.zip newsfeed.xcframework
 # shellcheck disable=SC2039
 popd || exit
 
 # Copy the zip file here
-cp magicsdk/build/XCFrameworks/release/magicsdk.xcframework.zip .
+cp magicsdk/build/XCFrameworks/release/newsfeed.xcframework.zip .
 
-git add magicsdk.xcframework.zip
+git add newsfeed.xcframework.zip
 git commit -m "Deployed version $version"
 git push origin "$version" -f
 

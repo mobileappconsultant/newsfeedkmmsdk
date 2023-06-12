@@ -1,31 +1,25 @@
-package com.arkangel.lostintravelsharedlibrary.datasource.network
+package com.mobileappconsultant.newsfeedmmsdk
 
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.http.HttpRequest
 import com.apollographql.apollo3.api.http.HttpResponse
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.network.http.HttpInterceptor
 import com.apollographql.apollo3.network.http.HttpInterceptorChain
 import com.apollographql.apollo3.network.http.HttpNetworkTransport
 import com.apollographql.apollo3.network.http.LoggingInterceptor
-import com.arkangel.lostintravelsharedlibrary.datasource.persistence.NetworkCache
 
 
 class Apollo(token: String) {
-    private val serverUrl = "https://lostapi.frontendlabs.co.uk/graphql"
+    private val serverUrl = "https://newsfeedapi.frontendlabs.co.uk/query"
 
-    val apolloClient = ApolloClient.Builder().networkTransport(
+    val client = ApolloClient.Builder().networkTransport(
             HttpNetworkTransport.Builder().addInterceptor(
                 interceptor = AuthorizationInterceptor(token)
             ).addInterceptor(LoggingInterceptor())
                 .serverUrl(serverUrl)
                 .build()
-        ).fetchPolicy(FetchPolicy.NetworkFirst)
-        .normalizedCache(NetworkCache.cache)
-        .build()
+        ).build()
 }
 
 class AuthorizationInterceptor(val token: String) : HttpInterceptor {

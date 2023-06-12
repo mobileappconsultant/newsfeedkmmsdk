@@ -1,0 +1,5 @@
+mutation GoogleLogin($input: GoogleAuth!) {
+    response: GoogleLogin(input: $input) {
+        token
+    }
+}

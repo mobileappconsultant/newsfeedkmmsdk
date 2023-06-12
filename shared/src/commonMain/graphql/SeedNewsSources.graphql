@@ -1,0 +1,9 @@
+query SeedNewsSources {
+    response: SeedNewsSources {
+        id
+        name
+        url
+        category
+        icon
+    }
+}

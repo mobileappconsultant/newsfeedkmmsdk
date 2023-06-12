@@ -1,0 +1,3 @@
+mutation SaveNews($newsId: String!) {
+    response: SaveNews(newsID: $newsId)
+}

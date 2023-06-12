@@ -1,0 +1,14 @@
+mutation CreateNewUser($input: CreateUser!) {
+    response: CreateNewUser(input: $input) {
+        _id
+        email
+        picture
+        full_name
+        topics
+        is_verified
+        is_otp_verified
+        is_password_reset
+        created_at
+        updated_at
+    }
+}

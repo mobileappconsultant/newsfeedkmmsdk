@@ -1,0 +1,6 @@
+query GetNewsCategories {
+    response: GetNewsCategories {
+        id
+        name
+    }
+}

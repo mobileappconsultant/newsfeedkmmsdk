@@ -1,0 +1,5 @@
+mutation VerifyEmail($input: VerifyOtp!) {
+    response: VerifyEmail(input: $input) {
+        message
+    }
+}

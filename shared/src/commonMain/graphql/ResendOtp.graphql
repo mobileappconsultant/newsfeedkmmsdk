@@ -1,0 +1,5 @@
+mutation ResendOtp($email: String!) {
+    response: ResendOtp(email: $email) {
+        message
+    }
+}

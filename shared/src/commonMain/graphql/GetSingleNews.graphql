@@ -1,0 +1,16 @@
+query GetSingleNews($input: String!) {
+    response: GetSingleNews(newsID: $input) {
+        id
+        creator
+        title
+        description
+        image_url
+        link
+        source_id
+        pubDate
+        content
+        category
+        likes
+        isLiked
+    }
+}

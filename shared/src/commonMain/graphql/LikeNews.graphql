@@ -1,0 +1,3 @@
+mutation LikeNews($newsId: String!) {
+    response: LikeNews(newsID: $newsId)
+}

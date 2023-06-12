@@ -1,0 +1,5 @@
+mutation CompleteRegistration($input: CompleteRegistration!) {
+    response: CompleteRegistration(input: $input) {
+        message
+    }
+}
