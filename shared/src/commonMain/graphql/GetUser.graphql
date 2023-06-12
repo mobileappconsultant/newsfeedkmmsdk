@@ -1,0 +1,9 @@
+query Query {
+    GetUser {
+        full_name
+        email
+    }
+#    NewsFeed {
+#        title
+#    }
+}
