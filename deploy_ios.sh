@@ -28,15 +28,15 @@ git rm --cached -r . || exit
 
 # Copy the XCFramework to the root folder
 # shellcheck disable=SC2039
-pushd "magicsdk/build/XCFrameworks/release" || exit
-zip -r newsfeed.xcframework.zip newsfeed.xcframework
+pushd "shared/build/XCFrameworks/release" || exit
+zip -r shared.xcframework.zip shared.xcframework
 # shellcheck disable=SC2039
 popd || exit
 
 # Copy the zip file here
-cp magicsdk/build/XCFrameworks/release/newsfeed.xcframework.zip .
+cp shared/build/XCFrameworks/release/shared.xcframework.zip .
 
-git add newsfeed.xcframework.zip
+git add shared.xcframework.zip
 git commit -m "Deployed version $version"
 git push origin "$version" -f
 
