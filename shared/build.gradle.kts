@@ -8,6 +8,8 @@ plugins {
     `maven-publish`
 }
 
+version = file("../VERSION").readText()
+
 apply {
     plugin("maven-publish")
 }
