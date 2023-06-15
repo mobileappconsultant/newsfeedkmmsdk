@@ -54,7 +54,7 @@ implementation ("com.mobileappconsultant.newsfeedkmmsdk:sdk:0.0.1-ALPHA-SNAPSHOT
 * Once the file has been created, open it and paste the following content:
 
 ```
-OTHER_LDFLAGS = $(inherited) -framework sdk
+OTHER_LDFLAGS = $(inherited) -framework shared
 REPO_NAME = newsfeedkmmsdk
 ACCESS_TOKEN = {YOUR_ACCESS_TOKEN}
 REPOSITORY = https:/$()/$(ACCESS_TOKEN)@github.com/mobileappconsultant/newsfeedkmmsdk
