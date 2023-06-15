@@ -34,6 +34,7 @@ import com.mobileappconsultant.newsfeedmmsdk.graphql.type.NewsQuery
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.PromptContent
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.ResetPassword
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.VerifyOtp
+import com.mobileappconsultant.newsfeedmmsdk.persistence.SDKSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -47,7 +48,8 @@ object NewsFeedSDK {
         query: Query<T>,
         dataBuilder: (ApolloResponse<T>) -> R?
     ): ApiResponse<R> {
-        val response = Apollo("").client.query(query).execute()
+        val token = SDKSettings.getToken()
+        val response = Apollo(token).client.query(query).execute()
 
         return ApiResponse(
             data = dataBuilder(response),
@@ -60,7 +62,8 @@ object NewsFeedSDK {
         mutation: Mutation<T>,
         dataBuilder: (ApolloResponse<T>) -> R?
     ): ApiResponse<R> {
-        val response = Apollo("").client.mutation(mutation).execute()
+        val token = SDKSettings.getToken()
+        val response = Apollo(token).client.mutation(mutation).execute()
 
         return ApiResponse(
             data = dataBuilder(response),
@@ -102,7 +105,11 @@ object NewsFeedSDK {
     }
 
     suspend fun login(input: Login): ApiResponse<LoginMutation.Response> {
-        return makeMutation(LoginMutation(input)) { it.data?.response }
+        return makeMutation(LoginMutation(input)) { it.data?.response }.apply {
+            data?.let {
+                SDKSettings.setToken(it.token)
+            }
+        }
     }
 
     suspend fun completeRegistration(input: CompleteRegistration): ApiResponse<CompleteRegistrationMutation.Response> {
@@ -114,7 +121,11 @@ object NewsFeedSDK {
     }
 
     suspend fun googleLogin(input: GoogleAuth): ApiResponse<GoogleLoginMutation.Response> {
-        return makeMutation(GoogleLoginMutation(input)) { it.data?.response }
+        return makeMutation(GoogleLoginMutation(input)) { it.data?.response }.apply {
+            data?.let {
+                SDKSettings.setToken(it.token)
+            }
+        }
     }
 
     suspend fun resetPassword(input: ResetPassword): ApiResponse<ResetPasswordMutation.Response> {
@@ -130,7 +141,11 @@ object NewsFeedSDK {
     }
 
     suspend fun logout(input: Logout): ApiResponse<LogoutMutation.Response> {
-        return makeMutation(LogoutMutation(input)) { it.data?.response }
+        return makeMutation(LogoutMutation(input)) { it.data?.response }.apply {
+            data?.let {
+                SDKSettings.removeToken()
+            }
+        }
     }
 
     suspend fun askKora(input: PromptContent): ApiResponse<AskKoraMutation.Response> {
