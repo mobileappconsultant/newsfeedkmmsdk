@@ -59,8 +59,8 @@ REPO_NAME = newsfeedkmmsdk
 ACCESS_TOKEN = {YOUR_ACCESS_TOKEN}
 REPOSITORY = https:/$()/$(ACCESS_TOKEN)@github.com/mobileappconsultant/newsfeedkmmsdk
 BRANCH = 0.0.1-ALPHA-SNAPSHOT
-MY_FRAMEWORK_PATH[sdk=iphonesimulator*] = $(BUILD_DIR)/$(REPO_NAME)/sdk.xcframework/ios-arm64_x86_64-simulator
-MY_FRAMEWORK_PATH[sdk=iphoneos*] = $(BUILD_DIR)/$(REPO_NAME)/sdk.xcframework/ios-arm64
+MY_FRAMEWORK_PATH[sdk=iphonesimulator*] = $(BUILD_DIR)/$(REPO_NAME)/shared.xcframework/ios-arm64_x86_64-simulator
+MY_FRAMEWORK_PATH[sdk=iphoneos*] = $(BUILD_DIR)/$(REPO_NAME)/shared.xcframework/ios-arm64
 FRAMEWORK_SEARCH_PATHS = $(inherited) $(MY_FRAMEWORK_PATH)
 ```
 
@@ -91,8 +91,8 @@ if [ -d "$BUILD_DIR/$REPO_NAME" ]; then
     echo "Listing the contents..."
     ls
     
-    rm -rf sdk.xcframework
-    unzip sdk.xcframework.zip -d . || exit
+    rm -rf shared.xcframework
+    unzip shared.xcframework.zip -d . || exit
     
     popd
 else
@@ -110,10 +110,10 @@ else
     echo "Listing the contents..."
     ls
     
-    rm -rf sdk.xcframework
+    rm -rf shared.xcframework
     
     # Unzip the zip file
-    unzip sdk.xcframework.zip -d . || exit
+    unzip shared.xcframework.zip -d . || exit
     
     popd
 fi
@@ -121,7 +121,7 @@ fi
 popd
 
 
-cp -r $MY_FRAMEWORK_PATH/sdk.framework ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}
+cp -r $MY_FRAMEWORK_PATH/shared.framework ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}
 ```
 
 * Build the project
@@ -129,7 +129,6 @@ cp -r $MY_FRAMEWORK_PATH/sdk.framework ${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_P
 # Usage
 
 ## Android
-
 
 ```kotlin
 val response: ApiResponse<LoginMutation.Response> = NewsFeedSDK.login(input)
