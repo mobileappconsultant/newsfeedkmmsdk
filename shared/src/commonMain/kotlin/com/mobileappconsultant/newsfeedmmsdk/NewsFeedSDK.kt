@@ -34,9 +34,15 @@ import com.mobileappconsultant.newsfeedmmsdk.graphql.type.NewsQuery
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.PromptContent
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.ResetPassword
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.VerifyOtp
+import com.mobileappconsultant.newsfeedmmsdk.models.Article
+import com.mobileappconsultant.newsfeedmmsdk.models.NewsCategory
+import com.mobileappconsultant.newsfeedmmsdk.models.NewsSource
+import com.mobileappconsultant.newsfeedmmsdk.models.toProperImageURL
 import com.mobileappconsultant.newsfeedmmsdk.persistence.SDKSettings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 data class TestResponse(
     val fullName: String,
@@ -157,4 +163,77 @@ object NewsFeedSDK {
     suspend fun resendOtp(email: String): ApiResponse<ResendOtpMutation.Response> {
         return makeMutation(ResendOtpMutation(email)) { it.data?.response }
     }
+
+    suspend fun fetchNewsSources(): ApiResponse<List<NewsSource>> {
+        val news = getLatestAndTrendingNews(
+            NewsQuery(
+                source = optionalOf(null),
+                category = optionalOf(null),
+                pageSize = optionalOf(10000),
+                page = optionalOf(1),
+            )
+        )
+
+        val newsSources = mutableListOf<NewsSource>()
+
+        val articles = mutableListOf<Article>()
+
+        if (!news.error) {
+            articles.addAll(news.data!!.map { Article(
+                id = it.id ?: "",
+                creators = it.creatorFilterNotNull().orEmpty(),
+                title = it.title ?: "",
+                description = it.description ?: "",
+                imageUrl = it.image_url ?: it.link?.toProperImageURL(),
+                link = it.link ?: "",
+                sourceId = it.source_id ?: "",
+                pubDate = it.pubDate ?: "",
+                content = it.content ?: "",
+                categories = it.categoryFilterNotNull(),
+                likes = it.likesFilterNotNull(),
+                isLiked = it.isLiked.orFalse(),
+            ) })
+
+            val result = articles.groupBy { it.sourceId }
+
+            result.forEach { item ->
+                val response = item.value.groupBy { it.categories.orEmpty()[0] }
+
+                val categories: MutableList<NewsCategory> = mutableListOf()
+
+                response.forEach { cat ->
+                    categories.add(NewsCategory(
+                        id = cat.key,
+                        name = cat.key,
+                        articles = cat.value,
+                    ))
+                }
+
+                val newsSource = NewsSource(
+                    id = "",
+                    name = item.key,
+                    url = item.value.first().link.toProperImageURL(),
+                    categories = categories,
+                )
+
+                newsSources.add(newsSource)
+            }
+
+            return ApiResponse(
+                errors = null,
+                data = newsSources,
+                error = false,
+            )
+        }
+
+        return ApiResponse(
+            errors = news.errors,
+            data = null,
+            error = true,
+        )
+    }
+}
+
+fun Boolean?.orFalse(): Boolean {
+    return this ?: false
 }
