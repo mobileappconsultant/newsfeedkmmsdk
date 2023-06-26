@@ -164,13 +164,13 @@ object NewsFeedSDK {
         return makeMutation(ResendOtpMutation(email)) { it.data?.response }
     }
 
-    suspend fun fetchNewsSources(): ApiResponse<List<NewsSource>> {
+    suspend fun fetchNewsSources(pageSize: Int, page: Int): ApiResponse<List<NewsSource>> {
         val news = getLatestAndTrendingNews(
             NewsQuery(
                 source = optionalOf(null),
                 category = optionalOf(null),
-                pageSize = optionalOf(1000),
-                page = optionalOf(1),
+                pageSize = optionalOf(pageSize),
+                page = optionalOf(page),
             )
         )
 
