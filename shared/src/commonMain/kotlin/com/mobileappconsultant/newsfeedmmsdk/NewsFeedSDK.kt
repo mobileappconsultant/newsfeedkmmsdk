@@ -169,7 +169,7 @@ object NewsFeedSDK {
             NewsQuery(
                 source = optionalOf(null),
                 category = optionalOf(null),
-                pageSize = optionalOf(10000),
+                pageSize = optionalOf(1000),
                 page = optionalOf(1),
             )
         )
