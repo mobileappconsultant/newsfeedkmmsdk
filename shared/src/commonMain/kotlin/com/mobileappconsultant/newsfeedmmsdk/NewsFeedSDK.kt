@@ -44,10 +44,7 @@ data class TestResponse(
 )
 
 object NewsFeedSDK {
-    private suspend fun <T : Query.Data, R> makeQuery(
-        query: Query<T>,
-        dataBuilder: (ApolloResponse<T>) -> R?
-    ): ApiResponse<R> {
+    private suspend fun <T : Query.Data, R> makeQuery(query: Query<T>, dataBuilder: (ApolloResponse<T>) -> R?): ApiResponse<R> {
         val token = SDKSettings.getToken()
         val response = Apollo(token).client.query(query).execute()
 
@@ -58,10 +55,7 @@ object NewsFeedSDK {
         )
     }
 
-    private suspend fun <T : Mutation.Data, R> makeMutation(
-        mutation: Mutation<T>,
-        dataBuilder: (ApolloResponse<T>) -> R?
-    ): ApiResponse<R> {
+    private suspend fun <T : Mutation.Data, R> makeMutation(mutation: Mutation<T>, dataBuilder: (ApolloResponse<T>) -> R?): ApiResponse<R> {
         val token = SDKSettings.getToken()
         val response = Apollo(token).client.mutation(mutation).execute()
 

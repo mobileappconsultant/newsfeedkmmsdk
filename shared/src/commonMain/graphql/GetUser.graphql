@@ -2,5 +2,13 @@ query GetUser {
     response: GetUser {
         full_name
         email
+        picture
+        _id
+        topics
+        is_verified
+        is_otp_verified
+        is_password_reset
+        created_at
+        updated_at
     }
 }
