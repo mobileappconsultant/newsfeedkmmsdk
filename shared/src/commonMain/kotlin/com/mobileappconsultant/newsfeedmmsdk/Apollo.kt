@@ -16,9 +16,7 @@ class Apollo(token: String) {
     val client = ApolloClient.Builder().networkTransport(
             HttpNetworkTransport.Builder().addInterceptor(
                 interceptor = AuthorizationInterceptor(token)
-            ).addInterceptor(LoggingInterceptor())
-                .serverUrl(serverUrl)
-                .build()
+            ).serverUrl(serverUrl).build()
         ).build()
 }
 
