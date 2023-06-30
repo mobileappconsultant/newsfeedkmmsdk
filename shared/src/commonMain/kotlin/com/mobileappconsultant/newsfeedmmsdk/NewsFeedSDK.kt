@@ -45,6 +45,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 data class TestResponse(
@@ -195,7 +199,7 @@ object NewsFeedSDK {
 
             articles.addAll(news.data!!.map {
                 val dateString = it.pubDate?.let { date ->
-                    val dateTime = date.toLocalDateTime()
+                    val dateTime = date.toDateTime() ?: throw Exception("Shouldn't happen")
                     "${dateTime.dayOfMonth} ${dateTime.month.name} ${dateTime.year} @ ${dateTime.hour.toDoubleDigitString()}:${dateTime.minute.toDoubleDigitString()}"
                 }
                 Article(
@@ -206,7 +210,7 @@ object NewsFeedSDK {
                 imageUrl = it.image_url ?: it.link?.toProperImageURL(),
                 link = it.link ?: "",
                 sourceId = it.source_id ?: "",
-                pubDate = it.pubDate ?: "",
+                pubDate = dateString ?: "",
                 content = it.content ?: "",
                 categories = it.categoryFilterNotNull(),
                 likes = it.likesFilterNotNull(),
@@ -255,6 +259,40 @@ object NewsFeedSDK {
 
 fun Boolean?.orFalse(): Boolean {
     return this ?: false
+}
+
+fun String.toDateTime(): LocalDateTime? {
+    val year: Int
+    val month: Int
+    val day: Int
+
+    val hours: Int
+    val minutes: Int
+    val seconds: Int
+
+    var cursor = this
+
+    // parse year
+    year = cursor.substring(0, 4).toInt()
+    cursor = cursor.substring(5)
+    month = cursor.substring(0, 2).toInt()
+    cursor = cursor.substring(3)
+    day = cursor.substring(0, 2).toInt()
+    cursor = cursor.substring(3).trim()
+
+    val time = cursor.split(":")
+    hours = time[0].toInt()
+    minutes = time[1].toInt()
+    seconds = time[2].toInt()
+
+    return LocalDateTime(
+        year = year,
+        month = Month(month),
+        dayOfMonth = day,
+        hour = hours,
+        minute = minutes,
+        second = seconds
+    )
 }
 
 fun Int.toDoubleDigitString(): String {
