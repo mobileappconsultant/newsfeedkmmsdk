@@ -39,10 +39,13 @@ import com.mobileappconsultant.newsfeedmmsdk.models.NewsCategory
 import com.mobileappconsultant.newsfeedmmsdk.models.NewsSource
 import com.mobileappconsultant.newsfeedmmsdk.models.toProperImageURL
 import com.mobileappconsultant.newsfeedmmsdk.persistence.SDKSettings
+import com.mobileappconsultant.newsfeedmmsdk.persistence.SummaryCache
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toLocalDateTime
 
 data class TestResponse(
     val fullName: String,
@@ -149,7 +152,17 @@ object NewsFeedSDK {
     }
 
     suspend fun askKora(input: PromptContent): ApiResponse<AskKoraMutation.Response> {
-        return makeMutation(AskKoraMutation(input)) { it.data?.response }
+        return SummaryCache.getSummary(input.hashCode().toString())?.let {
+            ApiResponse(
+                errors = listOf(),
+                data = AskKoraMutation.Response(it),
+                error = false
+            )
+        } ?: makeMutation(AskKoraMutation(input)) { it.data?.response }.apply {
+            data?.result?.let { result ->
+                SummaryCache.setSummary(input.hashCode().toString(), result)
+            }
+        }
     }
 
     suspend fun saveNews(newsId: String): ApiResponse<Boolean> {
@@ -179,10 +192,16 @@ object NewsFeedSDK {
         val articles = mutableListOf<Article>()
 
         if (!news.error) {
-            articles.addAll(news.data!!.map { Article(
+
+            articles.addAll(news.data!!.map {
+                val dateString = it.pubDate?.let { date ->
+                    val dateTime = date.toLocalDateTime()
+                    "${dateTime.dayOfMonth} ${dateTime.month.name} ${dateTime.year} @ ${dateTime.hour.toDoubleDigitString()}:${dateTime.minute.toDoubleDigitString()}"
+                }
+                Article(
                 id = it.id ?: "",
                 creators = it.creatorFilterNotNull().orEmpty(),
-                title = it.title ?: "",
+                title = it.title?.replaceFirstChar { char -> char.uppercase() } ?: "",
                 description = it.description ?: "",
                 imageUrl = it.image_url ?: it.link?.toProperImageURL(),
                 link = it.link ?: "",
@@ -204,14 +223,14 @@ object NewsFeedSDK {
                 response.forEach { cat ->
                     categories.add(NewsCategory(
                         id = cat.key,
-                        name = cat.key,
+                        name = cat.key.replaceFirstChar { it.uppercase() },
                         articles = cat.value,
                     ))
                 }
 
                 val newsSource = NewsSource(
                     id = "",
-                    name = item.key,
+                    name = item.key.replaceFirstChar { it.uppercase() },
                     url = item.value.first().link.toProperImageURL(),
                     categories = categories,
                 )
@@ -236,4 +255,12 @@ object NewsFeedSDK {
 
 fun Boolean?.orFalse(): Boolean {
     return this ?: false
+}
+
+fun Int.toDoubleDigitString(): String {
+    return if (toString().length < 2) {
+        "0$this"
+    } else {
+        toString()
+    }
 }

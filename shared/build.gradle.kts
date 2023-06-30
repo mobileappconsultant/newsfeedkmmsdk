@@ -41,11 +41,13 @@ kotlin {
                 implementation("com.apollographql.apollo3:apollo-runtime:3.7.4")
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
                 implementation("com.russhwolf:multiplatform-settings-no-arg:1.0.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
         val androidMain by getting {
@@ -53,6 +55,7 @@ kotlin {
                 implementation("com.apollographql.apollo3:apollo-runtime:3.7.4")
                 implementation("com.russhwolf:multiplatform-settings:1.0.0")
                 implementation("com.russhwolf:multiplatform-settings-no-arg:1.0.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
             }
         }
         val androidUnitTest by getting
