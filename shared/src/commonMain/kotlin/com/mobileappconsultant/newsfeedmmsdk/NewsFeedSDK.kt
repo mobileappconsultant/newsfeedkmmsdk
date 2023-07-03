@@ -303,7 +303,7 @@ fun Boolean?.orFalse(): Boolean {
     return this ?: false
 }
 
-fun String.toDateTime(): LocalDateTime? {
+fun String.toDateTime(): LocalDateTime {
     val year: Int
     val month: Int
     val day: Int
