@@ -1,0 +1,5 @@
+mutation EditUserProfile($input: UpdateProfile!) {
+    response: EditUserProfile(input: $input) {
+        message
+    }
+}

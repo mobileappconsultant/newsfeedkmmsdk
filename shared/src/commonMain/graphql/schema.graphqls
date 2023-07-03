@@ -1,347 +1,365 @@
 #
 type Article {
-    #
-    id: String
+  #
+  id: String
 
-    #
-    creator: [String]
+  #
+  creator: [String]
 
-    #
-    title: String
+  #
+  title: String
 
-    #
-    description: String
+  #
+  description: String
 
-    #
-    image_url: String
+  #
+  image_url: String
 
-    #
-    link: String
+  #
+  link: String
 
-    #
-    source_id: String
+  #
+  source_id: String
 
-    #
-    pubDate: String
+  #
+  pubDate: String
 
-    #
-    content: String
+  #
+  content: String
 
-    #
-    category: [String]
+  #
+  category: [String]
 
-    #
-    likes: [String]
+  #
+  likes: [String]
 
-    #
-    isLiked: Boolean
+  #
+  isLiked: Boolean
 }
 
 #
 type Category {
-    #
-    id: String
+  #
+  id: String
 
-    #
-    name: String
+  #
+  name: String
 }
 
 #
 input CompleteRegistration {
-    #
-    topics: [String]
+  #
+  topics: [String]
 }
 
 #
 input CreateUser {
-    #
-    email: String!
+  #
+  email: String!
 
-    #
-    full_name: String!
+  #
+  full_name: String!
 
-    #
-    phone_number: String!
+  #
+  phone_number: String!
 
-    #
-    password: String!
+  #
+  password: String!
 }
 
 #
 type ErrorResponse {
-    #
-    status: String
+  #
+  status: String
 
-    #
-    results: NewsError
+  #
+  results: NewsError
 }
 
 #
 input ForgotPassword {
-    #
-    email: String!
+  #
+  email: String!
 }
 
 #
 type GenericResponse {
-    #
-    message: String!
+  #
+  message: String!
 }
 
 #
 input GoogleAuth {
-    #
-    access_token: String!
+  #
+  access_token: String!
 }
 
 #
 type GoogleAuthModel {
-    #
-    sub: String
+  #
+  sub: String
 
-    #
-    name: String
+  #
+  name: String
 
-    #
-    given_name: String
+  #
+  given_name: String
 
-    #
-    family_name: String
+  #
+  family_name: String
 
-    #
-    email: String
+  #
+  email: String
 
-    #
-    picture: String
+  #
+  picture: String
 
-    #
-    email_verified: Boolean
+  #
+  email_verified: Boolean
 
-    #
-    locale: String
+  #
+  locale: String
 }
 
 #
 input Login {
-    #
-    email: String!
+  #
+  email: String!
 
-    #
-    password: String!
+  #
+  password: String!
 }
 
 #
 type LoginResponse {
-    #
-    token: String!
+  #
+  token: String!
 }
 
 #
 input Logout {
-    #
-    token: String!
+  #
+  token: String!
 }
 
 #
 type Mutation {
-    #
-    CreateNewUser(input: CreateUser!): User
+  #
+  CreateNewUser(input: CreateUser!): User
 
-    #
-    Login(input: Login!): LoginResponse!
+  #
+  Login(input: Login!): LoginResponse!
 
-    #
-    CompleteRegistration(input: CompleteRegistration!): GenericResponse
+  #
+  CompleteRegistration(input: CompleteRegistration!): GenericResponse
 
-    #
-    ForgotPassword(input: ForgotPassword!): GenericResponse!
+  #
+  ForgotPassword(input: ForgotPassword!): GenericResponse!
 
-    #
-    GoogleLogin(input: GoogleAuth!): LoginResponse
+  #
+  GoogleLogin(input: GoogleAuth!): LoginResponse
 
-    #
-    ResetPassword(input: ResetPassword!): GenericResponse!
+  #
+  ResetPassword(input: ResetPassword!): GenericResponse!
 
-    #
-    VerifyEmail(input: VerifyOtp!): GenericResponse!
+  #
+  VerifyEmail(input: VerifyOtp!): GenericResponse!
 
-    #
-    VerifyResetOtp(input: VerifyOtp!): GenericResponse!
+  #
+  VerifyResetOtp(input: VerifyOtp!): GenericResponse!
 
-    #
-    Logout(input: Logout!): GenericResponse
+  #
+  Logout(input: Logout!): GenericResponse
 
-    #
-    AskKora(input: promptContent!): promptResponse
+  #
+  AskKora(input: promptContent!): promptResponse
 
-    #
-    SaveNews(newsID: String!): Boolean
+  #
+  SaveNews(newsID: String!): Boolean
 
-    #
-    LikeNews(newsID: String!): Boolean
+  #
+  LikeNews(newsID: String!): Boolean
 
-    #
-    ResendOtp(email: String!): GenericResponse
+  #
+  ResendOtp(email: String!): GenericResponse
+
+  #
+  EditUserProfile(input: UpdateProfile!): GenericResponse
+
+  #
+  DeleteProfile: GenericResponse
+
+  #
+  EditUserInterest(topics: [String!]): GenericResponse
 }
 
 #
 type NewsError {
-    #
-    message: String
+  #
+  message: String
 
-    #
-    code: String
+  #
+  code: String
 }
 
 #
 input NewsQuery {
-    #
-    source: String
+  #
+  source: String
 
-    #
-    category: String
+  #
+  category: String
 
-    #
-    pageSize: Int
+  #
+  pageSize: Int!
 
-    #
-    page: Int
+  #
+  page: Int!
 }
 
 #
 type Query {
-    #
-    GetUser: User
+  #
+  GetUser: User
 
-    #
-    GetLatestAndTrendingNews(query: NewsQuery!): [Article]
+  #
+  GetLatestAndTrendingNews(query: NewsQuery!): [Article]
 
-    #
-    GetNewsSources: [Source]
+  #
+  GetNewsSources: [Source]
 
-    #
-    SeedNewsSources: [Source]
+  #
+  SeedNewsSources: [Source]
 
-    #
-    GetNewsCategories: [Category]
+  #
+  GetNewsCategories: [Category]
 
-    #
-    GetSingleNews(newsID: String!): Article
+  #
+  GetSingleNews(newsID: String!): Article
 
-    #
-    GetSavedNews: [Article]
+  #
+  GetSavedNews: [Article]
 }
 
 #
 input ResetPassword {
-    #
-    email: String!
+  #
+  email: String!
 
-    #
-    newPassword: String!
+  #
+  newPassword: String!
 }
 
 #
 type Response {
-    #
-    status: String
+  #
+  status: String
 
-    #
-    totalResults: Int
+  #
+  totalResults: Int
 
-    #
-    results: [Article]
+  #
+  results: [Article]
 }
 
 #
 type Source {
-    #
-    id: String
+  #
+  id: String
 
-    #
-    name: String
+  #
+  name: String
 
-    #
-    url: String
+  #
+  url: String
 
-    #
-    category: [String]
+  #
+  category: [String]
 
-    #
-    icon: String
+  #
+  icon: String
 }
 
 #
 type SourceLogo {
-    #
-    name: String
+  #
+  name: String
 
-    #
-    domain: String
+  #
+  domain: String
 
-    #
-    icon: String
+  #
+  icon: String
 }
 
 #
 type SourceResponse {
-    #
-    status: String
+  #
+  status: String
 
-    #
-    results: [Source]
+  #
+  results: [Source]
 }
 
 #
 scalar Timestamp
 
 #
+input UpdateProfile {
+  #
+  picture: String
+
+  #
+  full_name: String
+}
+
+#
 type User {
-    #
-    _id: ID!
+  #
+  _id: ID!
 
-    #
-    email: String
+  #
+  email: String
 
-    #
-    picture: String
+  #
+  picture: String
 
-    #
-    full_name: String
+  #
+  full_name: String
 
-    #
-    topics: [String]
+  #
+  topics: [String]
 
-    #
-    is_verified: Boolean
+  #
+  is_verified: Boolean
 
-    #
-    is_otp_verified: Boolean
+  #
+  is_otp_verified: Boolean
 
-    #
-    is_password_reset: Boolean
+  #
+  is_password_reset: Boolean
 
-    #
-    created_at: Timestamp!
+  #
+  created_at: Timestamp!
 
-    #
-    updated_at: Timestamp!
+  #
+  updated_at: Timestamp!
 }
 
 #
 input VerifyOtp {
-    #
-    otp: String!
+  #
+  otp: String!
 }
 
 #
 input promptContent {
-    #
-    content: String
+  #
+  content: String
 }
 
 #
 type promptResponse {
-    #
-    result: String
+  #
+  result: String
 }

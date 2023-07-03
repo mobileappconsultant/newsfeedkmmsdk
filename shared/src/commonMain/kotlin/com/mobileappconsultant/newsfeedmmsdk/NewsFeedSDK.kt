@@ -2,11 +2,15 @@ package com.mobileappconsultant.newsfeedmmsdk
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Error
 import com.apollographql.apollo3.api.Mutation
 import com.apollographql.apollo3.api.Query
 import com.mobileappconsultant.newsfeedmmsdk.graphql.AskKoraMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.CompleteRegistrationMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.CreateNewUserMutation
+import com.mobileappconsultant.newsfeedmmsdk.graphql.DeleteUserProfileMutation
+import com.mobileappconsultant.newsfeedmmsdk.graphql.EditUserInterestsMutation
+import com.mobileappconsultant.newsfeedmmsdk.graphql.EditUserProfileMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.ForgotPasswordMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.GetLatestAndTrendingNewsQuery
 import com.mobileappconsultant.newsfeedmmsdk.graphql.GetNewsCategoriesQuery
@@ -27,12 +31,14 @@ import com.mobileappconsultant.newsfeedmmsdk.graphql.VerifyResetOtpMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.CompleteRegistration
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.CreateUser
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.ForgotPassword
+import com.mobileappconsultant.newsfeedmmsdk.graphql.type.GenericResponse
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.GoogleAuth
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.Login
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.Logout
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.NewsQuery
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.PromptContent
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.ResetPassword
+import com.mobileappconsultant.newsfeedmmsdk.graphql.type.UpdateProfile
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.VerifyOtp
 import com.mobileappconsultant.newsfeedmmsdk.models.Article
 import com.mobileappconsultant.newsfeedmmsdk.models.NewsCategory
@@ -59,7 +65,19 @@ data class TestResponse(
 object NewsFeedSDK {
     private suspend fun <T : Query.Data, R> makeQuery(query: Query<T>, dataBuilder: (ApolloResponse<T>) -> R?): ApiResponse<R> {
         val token = SDKSettings.getToken()
-        val response = Apollo(token).client.query(query).execute()
+        val response = try { Apollo(token).client.query(query).execute() } catch (e: Exception) {
+            return ApiResponse(
+                data = null,
+                error = true,
+                errors = listOf(Error(
+                    message = e.message ?: "",
+                    locations = null,
+                    path = null,
+                    extensions = null,
+                    nonStandardFields = null
+                ))
+            )
+        }
 
         return ApiResponse(
             data = dataBuilder(response),
@@ -70,7 +88,19 @@ object NewsFeedSDK {
 
     private suspend fun <T : Mutation.Data, R> makeMutation(mutation: Mutation<T>, dataBuilder: (ApolloResponse<T>) -> R?): ApiResponse<R> {
         val token = SDKSettings.getToken()
-        val response = Apollo(token).client.mutation(mutation).execute()
+        val response = try { Apollo(token).client.mutation(mutation).execute() } catch (e: Exception) {
+            return ApiResponse(
+                data = null,
+                error = true,
+                errors = listOf(Error(
+                    message = e.message ?: "",
+                    locations = null,
+                    path = null,
+                    extensions = null,
+                    nonStandardFields = null
+                ))
+            )
+        }
 
         return ApiResponse(
             data = dataBuilder(response),
@@ -186,8 +216,8 @@ object NewsFeedSDK {
             NewsQuery(
                 source = optionalOf(null),
                 category = optionalOf(null),
-                pageSize = optionalOf(pageSize),
-                page = optionalOf(page),
+                pageSize = pageSize,
+                page = page,
             )
         )
 
@@ -236,7 +266,7 @@ object NewsFeedSDK {
                     id = "",
                     name = item.key.replaceFirstChar { it.uppercase() },
                     url = item.value.first().link.toProperImageURL(),
-                    categories = categories,
+                    categories = categories.sortedBy { it.name },
                 )
 
                 newsSources.add(newsSource)
@@ -254,6 +284,18 @@ object NewsFeedSDK {
             data = null,
             error = true,
         )
+    }
+
+    suspend fun deleteUserProfile(): ApiResponse<DeleteUserProfileMutation.Response> {
+        return makeMutation(DeleteUserProfileMutation()) { it.data?.response }
+    }
+
+    suspend fun editUserProfile(input: UpdateProfile): ApiResponse<EditUserProfileMutation.Response> {
+        return makeMutation(EditUserProfileMutation(input)) { it.data?.response }
+    }
+
+    suspend fun editUserInterests(interests: List<String>): ApiResponse<EditUserInterestsMutation.Response> {
+        return makeMutation(EditUserInterestsMutation(optionalOf(interests))) { it.data?.response }
     }
 }
 

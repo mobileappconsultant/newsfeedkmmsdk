@@ -1,0 +1,5 @@
+mutation EditUserInterests($input: [String!]) {
+    response: EditUserInterest(topics: $input) {
+        message
+    }
+}

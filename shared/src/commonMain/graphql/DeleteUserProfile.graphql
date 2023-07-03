@@ -1,0 +1,5 @@
+mutation DeleteUserProfile {
+    response: DeleteProfile {
+        message
+    }
+}
