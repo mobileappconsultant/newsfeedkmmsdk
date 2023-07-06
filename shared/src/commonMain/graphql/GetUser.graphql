@@ -10,5 +10,6 @@ query GetUser {
         is_password_reset
         created_at
         updated_at
+        phone_number
     }
 }

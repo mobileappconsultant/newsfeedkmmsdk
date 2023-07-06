@@ -6,6 +6,7 @@ import com.apollographql.apollo3.api.Error
 import com.apollographql.apollo3.api.Mutation
 import com.apollographql.apollo3.api.Query
 import com.mobileappconsultant.newsfeedmmsdk.graphql.AskKoraMutation
+import com.mobileappconsultant.newsfeedmmsdk.graphql.ChangePasswordMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.CompleteRegistrationMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.CreateNewUserMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.DeleteUserProfileMutation
@@ -28,6 +29,7 @@ import com.mobileappconsultant.newsfeedmmsdk.graphql.SaveNewsMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.SeedNewsSourcesQuery
 import com.mobileappconsultant.newsfeedmmsdk.graphql.VerifyEmailMutation
 import com.mobileappconsultant.newsfeedmmsdk.graphql.VerifyResetOtpMutation
+import com.mobileappconsultant.newsfeedmmsdk.graphql.type.ChangePassword
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.CompleteRegistration
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.CreateUser
 import com.mobileappconsultant.newsfeedmmsdk.graphql.type.ForgotPassword
@@ -296,6 +298,10 @@ object NewsFeedSDK {
 
     suspend fun editUserInterests(interests: List<String>): ApiResponse<EditUserInterestsMutation.Response> {
         return makeMutation(EditUserInterestsMutation(optionalOf(interests))) { it.data?.response }
+    }
+
+    suspend fun changePassword(input: ChangePassword): ApiResponse<ChangePasswordMutation.Response> {
+        return makeMutation(ChangePasswordMutation(input)) { it.data?.response }
     }
 }
 
